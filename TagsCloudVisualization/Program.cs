@@ -13,8 +13,9 @@ namespace TagsCloudVisualization {
                 layouter.PushNextRectangle(new Size(x, y), true);
             }
 
-            var visualizator = new TagsCloudVisualizator(layouter.GetRectangles());
-            visualizator.SaveImageToFile("1.bmp");
+            var visualizator = new TagsCloudVisualizator();
+            visualizator.DrawCloud(layouter.GetRectangles());
+            //visualizator.SaveImageToFile("1.bmp", layouter.GetRectangles());
 
             Application.Run(visualizator);
         }

@@ -5,14 +5,12 @@ using System.Linq;
 
 namespace TagsCloudVisualization {
     public class TagsCloudVisualizator : Form {
-        readonly List<Rectangle> rectangles;
-        public TagsCloudVisualizator(List<Rectangle> rectangles) {
+        private List<Rectangle> rectangles;
+        public TagsCloudVisualizator() {
             Size = new Size(1300, 700);
-            this.rectangles = rectangles;
         }
 
-        public void SaveImageToFile(string fileName) {
-            var center = rectangles.First();
+        public void SaveImageToFile(string fileName, List<Rectangle> rectangles) {
             var left = rectangles.Min(r => r.Left);
             var top = rectangles.Min(r => r.Top);
             var height = rectangles.Max(r => r.Bottom) - rectangles.Min(r => r.Top);
@@ -29,10 +27,15 @@ namespace TagsCloudVisualization {
             bitmap.Save(fileName);
         }
 
+        public void DrawCloud(List<Rectangle> rectangles) {
+            this.rectangles = rectangles;
+        }
+
         protected override void OnPaint(PaintEventArgs e) {
             var graphics = e.Graphics;
 
-            graphics.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
+            if (rectangles != null)
+                graphics.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
         }
     }
 }

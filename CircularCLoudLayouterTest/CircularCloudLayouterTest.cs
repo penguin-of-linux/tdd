@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Drawing;
 using TagsCloudVisualization;
 using System.Linq;
 using System;
 
-namespace CircularCloudLayouterTests {
+namespace Tests {
     [TestFixture]
     public class CircularCloudLayouterTest {
         public CircularCloudLayouter cloudLayouter;
@@ -16,14 +15,14 @@ namespace CircularCloudLayouterTests {
         }
 
         [Test]
-        public void PushNextRectangle_EmptyList() {
+        public void PushNextRectangle_PushFirstRectangle() {
             var size = new Size(10, 10);
             var nextRectangle = cloudLayouter.PushNextRectangle(size);
-            Assert.AreEqual(cloudLayouter.center, nextRectangle.GetCenter());
+            Assert.AreEqual(cloudLayouter.Center, nextRectangle.GetCenter());
         }
 
         [Test]
-        public void PushNextRectangle_ManyItems() {
+        public void CloudHasCircularForm() {
             for (int i = 0; i < 30; i++)
                 cloudLayouter.PushNextRectangle(new Size(10, 5));
 
@@ -31,7 +30,7 @@ namespace CircularCloudLayouterTests {
         }
 
         [Test]
-        public void IsRectanglesCrossing() {
+        public void RectanglesIsNotCrossing() {
             var isCrossing = false;
             for (int i = 0; i < 50; i++) {
                 var rect = cloudLayouter.PushNextRectangle(new Size(50, 25));
@@ -49,48 +48,25 @@ namespace CircularCloudLayouterTests {
                 cloudLayouter.PushNextRectangle(new Size(10, 5));
 
             var oldSummDistToCenter = cloudLayouter.GetRectangles().Sum(r => {
-                    var x = cloudLayouter.center.X - r.Location.X;
-                    var y = cloudLayouter.center.Y - r.Location.Y;
+                    var x = cloudLayouter.Center.X - r.Location.X;
+                    var y = cloudLayouter.Center.Y - r.Location.Y;
                     return Math.Sqrt(x * x + y * y);
                 }
             );
 
-            cloudLayouter = new CircularCloudLayouter(cloudLayouter.center);
+            cloudLayouter = new CircularCloudLayouter(cloudLayouter.Center);
             for (int i = 0; i < 20; i++) {
                 cloudLayouter.PushNextRectangle(new Size(10, 5), true);
             }
 
             var newSummDistToCenter = cloudLayouter.GetRectangles().Sum(r => {
-                    var x = cloudLayouter.center.X - r.Location.X;
-                    var y = cloudLayouter.center.Y - r.Location.Y;
+                    var x = cloudLayouter.Center.X - r.Location.X;
+                    var y = cloudLayouter.Center.Y - r.Location.Y;
                     return Math.Sqrt(x * x + y * y);
                 }
             );
             Assert.Greater(oldSummDistToCenter, newSummDistToCenter);
 
-        }
-    }
-
-    [TestFixture]
-    public class RectangleExtensionTest {
-
-        [TestCase(25, 5, 2, 2, ExpectedResult = false)]
-        [TestCase(5, 5, 5, 5, ExpectedResult = true)]
-        public bool IsCrossing(int x, int y, int w, int h) {
-            var rectangles = new List<Rectangle>() {
-                new Rectangle(0, 0, 10, 10),
-                new Rectangle(11, 11, 10, 10),
-                new Rectangle(-5, -5, 1, 1)
-            };
-
-            return new Rectangle(x, y, w, h).IsCrossing(rectangles);
-        }
-
-        [Test]
-        public void GetCenter() {
-            var rect = new Rectangle(0, 0, 10, 10);
-            var center = rect.GetCenter();
-            Assert.AreEqual(new Point(5, 5), center);
         }
     }
 }

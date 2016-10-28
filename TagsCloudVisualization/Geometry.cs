@@ -5,11 +5,11 @@ using System.Drawing;
 namespace TagsCloudVisualization {
     public static class Geometry {
         public const double offsetAlongRay = 8;
-        public static double SpiralEquation(double k, double fi) {
+        private static double SpiralEquation(double k, double fi) {
             return k * fi;
         }
 
-        public static Point FromPolarToDecart(double p, double fi) {
+        private static Point FromPolarToDecart(double p, double fi) {
             var x = p * Math.Cos(fi);
             var y = p * Math.Sin(fi);
             return new Point((int)Math.Round(x), (int)Math.Round(y));

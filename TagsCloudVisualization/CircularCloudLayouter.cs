@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization {
     public class CircularCloudLayouter : ICloudLayouter {
-        public readonly Point center;
+        public readonly Point Center;
         private List<Rectangle> rectangles = new List<Rectangle>();
 
         public int CloudHeight { get {
@@ -27,42 +27,42 @@ namespace TagsCloudVisualization {
             return new List<Rectangle>(rectangles);
         }
         public CircularCloudLayouter(Point center) {
-            this.center = center;
+            Center = center;
         }
 
         public Rectangle PushNextRectangle(Size size) {
             return PushNextRectangle(size, false);
         }
 
-        public Rectangle PushNextRectangle(Size size, bool isCompact) {
-            var result = new Rectangle(center, size);
+        public Rectangle PushNextRectangle(Size size, bool isCompactLayouting = true) {
+            var result = new Rectangle(Center, size);
             if (rectangles.Count == 0) {
-                result.Location = new Point(center.X - result.Width / 2, center.Y - result.Height / 2);
+                result.Location = new Point(Center.X - result.Width / 2, Center.Y - result.Height / 2);
                 rectangles.Add(result);
                 return result;
             }
 
             foreach (var location in Geometry.GetNewSpiralPoint()) {
-                result.Location = new Point(center.X + location.X, center.Y + location.Y);
+                result.Location = new Point(Center.X + location.X, Center.Y + location.Y);
                 if (!result.IsCrossing(rectangles)) {
                     Geometry.GetNewSpiralPoint(true);
                     break;
                 }
             }
-            if (isCompact) {
+            if (isCompactLayouting) {
                 result.Location = GetCompactLocation(result);
             }
             rectangles.Add(result);
             return result;
         }
 
-        public Point GetCompactLocation(Rectangle target) {
-            if (target.GetCenter() == center) return target.Location;
+        private Point GetCompactLocation(Rectangle target) {
+            if (target.GetCenter() == Center) return target.Location;
             var tempRect = target;
             var previousLocation = tempRect.Location;
             double x = tempRect.Location.X;
             double y = tempRect.Location.Y;
-            var deltaVector = new System.Windows.Vector(center.X - x, center.Y - y);
+            var deltaVector = new System.Windows.Vector(Center.X - x, Center.Y - y);
             deltaVector.Normalize();
 
             while (!tempRect.IsCrossing(rectangles.Where(r => !r.Equals(target)).ToList())) {

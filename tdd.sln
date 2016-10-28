@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{C5B9F9A9-8291-4AB4-8703-9F0BF2FDFD75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCLoudLayouterTest", "CircularCLoudLayouterTest\CircularCLoudLayouterTest.csproj", "{B55028A3-47A6-4CEE-8D5B-7CA94D39BF08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "CircularCLoudLayouterTest\Tests.csproj", "{B55028A3-47A6-4CEE-8D5B-7CA94D39BF08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
