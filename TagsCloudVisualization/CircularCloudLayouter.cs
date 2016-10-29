@@ -34,7 +34,7 @@ namespace TagsCloudVisualization {
             return PushNextRectangle(size, false);
         }
 
-        public Rectangle PushNextRectangle(Size size, bool isCompactLayouting = true) {
+        public Rectangle PushNextRectangle(Size size, bool isCompactLayouting) {
             var result = new Rectangle(Center, size);
             if (rectangles.Count == 0) {
                 result.Location = new Point(Center.X - result.Width / 2, Center.Y - result.Height / 2);
