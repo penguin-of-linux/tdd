@@ -2,12 +2,13 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
+using System;
 
 namespace TagsCloudVisualization {
     public class TagsCloudVisualizator : Form {
-        private List<Rectangle> rectangles;
-        public TagsCloudVisualizator() {
-            Size = new Size(1300, 700);
+        public TagCloud Cloud { private get; set; }
+        public TagsCloudVisualizator(Size size) {
+            Size = size;
         }
 
         public void SaveImageToFile(string fileName, List<Rectangle> rectangles) {
@@ -27,15 +28,19 @@ namespace TagsCloudVisualization {
             bitmap.Save(fileName);
         }
 
-        public void DrawCloud(List<Rectangle> rectangles) {
-            this.rectangles = rectangles;
-        }
-
         protected override void OnPaint(PaintEventArgs e) {
             var graphics = e.Graphics;
 
-            if (rectangles != null)
-                graphics.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
+            if (Cloud != null) {
+                foreach(var tag in Cloud.Tags) {
+                    var rect = new Rectangle(tag.Location, tag.Form);
+                    graphics.DrawRectangle(new Pen(Color.Black), rect);
+                    //graphics.FillRectangle()
+                    //var fontSize_em = (int)(rect.Height / 0.35);
+                    var font = new Font("fantasy", 10);
+                    TextRenderer.DrawText(graphics, tag.Text, font, rect, Color.Red);
+                }
+            }
         }
     }
 }

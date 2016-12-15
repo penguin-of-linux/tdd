@@ -1,23 +1,39 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
-using System.IO;
+using System.Linq;
+using Autofac;
+using TagsCloudVisualization.FileReaders;
 
 namespace TagsCloudVisualization {
     static class Program {
+        static IContainer container;
         static void Main() {
-            var layouter = new CircularCloudLayouter(new Point(200, 200));
-            var lines = File.ReadAllLines("../../sizes_1.txt");
-            foreach(var line in lines) {
-                var x = int.Parse(line.Split(',')[0]);
-                var y = int.Parse(line.Split(',')[1]);
-                layouter.PushNextRectangle(new Size(x, y), true);
+            AutofacSetUp();
+
+            var words = container.Resolve<IFileReader>().GetWords("../../words1.txt");
+            var cloud = TagCloud.CreateTagsCloud(words);
+            var layouter = container.Resolve<ICloudLayouter>(
+                new TypedParameter(typeof(Point), new Point(200, 200)));
+
+            for(int i = 0; i < cloud.Tags.Count; i++) {
+                var location = layouter.PushNextRectangle(cloud.Tags[i].Form).Location;
+                cloud.Tags[i].Location = location;
             }
 
-            var visualizator = new TagsCloudVisualizator();
-            visualizator.DrawCloud(layouter.GetRectangles());
+            var visualizator = new TagsCloudVisualizator(new Size(layouter.CloudWidth, layouter.CloudHeight));
+
+            visualizator.Cloud = cloud;
             //visualizator.SaveImageToFile("1.bmp", layouter.GetRectangles());
 
             Application.Run(visualizator);
+        }
+
+        static void AutofacSetUp() {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<CircularCloudLayouter>().As<ICloudLayouter>();
+            builder.RegisterType<TxtReader>().As<IFileReader>();
+
+            container = builder.Build();
         }
     }
 }

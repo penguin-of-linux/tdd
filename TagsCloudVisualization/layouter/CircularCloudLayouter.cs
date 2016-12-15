@@ -8,7 +8,8 @@ namespace TagsCloudVisualization {
         public readonly Point Center;
         private List<Rectangle> rectangles = new List<Rectangle>();
 
-        public int CloudHeight { get {
+        public int CloudHeight {
+            get {
                 var top = rectangles.Min(r => r.Top);
                 var bottom = rectangles.Max(r => r.Bottom);
                 return bottom - top;
@@ -31,10 +32,6 @@ namespace TagsCloudVisualization {
         }
 
         public Rectangle PushNextRectangle(Size size) {
-            return PushNextRectangle(size, false);
-        }
-
-        public Rectangle PushNextRectangle(Size size, bool isCompactLayouting) {
             var result = new Rectangle(Center, size);
             if (rectangles.Count == 0) {
                 result.Location = new Point(Center.X - result.Width / 2, Center.Y - result.Height / 2);
@@ -49,9 +46,8 @@ namespace TagsCloudVisualization {
                     break;
                 }
             }
-            if (isCompactLayouting) {
-                result.Location = GetCompactLocation(result);
-            }
+
+            result.Location = GetCompactLocation(result);
             rectangles.Add(result);
             return result;
         }

@@ -56,7 +56,7 @@ namespace Tests {
 
             cloudLayouter = new CircularCloudLayouter(cloudLayouter.Center);
             for (int i = 0; i < 20; i++) {
-                cloudLayouter.PushNextRectangle(new Size(10, 5), true);
+                cloudLayouter.PushNextRectangle(new Size(10, 5));
             }
 
             var newSummDistToCenter = cloudLayouter.GetRectangles().Sum(r => {
@@ -65,7 +65,7 @@ namespace Tests {
                     return Math.Sqrt(x * x + y * y);
                 }
             );
-            Assert.Greater(oldSummDistToCenter, newSummDistToCenter);
+            Assert.GreaterOrEqual(oldSummDistToCenter, newSummDistToCenter);
 
         }
     }
