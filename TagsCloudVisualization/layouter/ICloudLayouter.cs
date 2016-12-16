@@ -7,5 +7,6 @@ namespace TagsCloudVisualization {
         List<Rectangle> GetRectangles();
         int CloudHeight { get; }
         int CloudWidth { get; }
+        Point Center { get; }
     }
 }

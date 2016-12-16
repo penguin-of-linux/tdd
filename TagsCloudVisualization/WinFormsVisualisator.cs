@@ -5,13 +5,15 @@ using System.Linq;
 using System;
 
 namespace TagsCloudVisualization {
-    public class TagsCloudVisualizator : Form {
+    public class WinFormsVisualisator : Form, ITagCloudVisualizator {
         public TagCloud Cloud { private get; set; }
-        public TagsCloudVisualizator(Size size) {
+        public WinFormsVisualisator(Size size) {
             Size = size;
         }
 
-        public void SaveImageToFile(string fileName, List<Rectangle> rectangles) {
+        public void SaveImageToFile(string fileName) {
+            var rectangles = Cloud.Tags.Select(t => new Rectangle(t.Location, t.Form));
+
             var left = rectangles.Min(r => r.Left);
             var top = rectangles.Min(r => r.Top);
             var height = rectangles.Max(r => r.Bottom) - rectangles.Min(r => r.Top);
@@ -34,13 +36,16 @@ namespace TagsCloudVisualization {
             if (Cloud != null) {
                 foreach(var tag in Cloud.Tags) {
                     var rect = new Rectangle(tag.Location, tag.Form);
-                    graphics.DrawRectangle(new Pen(Color.Black), rect);
+                    //graphics.DrawRectangle(new Pen(Color.Black), rect);
                     //graphics.FillRectangle()
                     //var fontSize_em = (int)(rect.Height / 0.35);
-                    var font = new Font("fantasy", 10);
-                    TextRenderer.DrawText(graphics, tag.Text, font, rect, Color.Red);
+                    TextRenderer.DrawText(graphics, tag.Text, tag.Font, rect, tag.Color);
                 }
             }
+        }
+
+        public void DrawCloud() {
+            Application.Run(this);
         }
     }
 }

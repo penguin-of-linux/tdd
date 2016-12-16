@@ -62,9 +62,9 @@
     <Compile Include="RectangleExtensionTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj">
+    <ProjectReference Include="..\TagsCloudVisualization\TagCloudVisualization.csproj">
       <Project>{c5b9f9a9-8291-4ab4-8703-9f0bf2fdfd75}</Project>
-      <Name>TagsCloudVisualization</Name>
+      <Name>TagCloudVisualization</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

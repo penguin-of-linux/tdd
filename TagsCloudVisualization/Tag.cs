@@ -4,14 +4,16 @@
 namespace TagsCloudVisualization {
     public class Tag {
         public readonly string Text;
+        public readonly Font Font;
         public readonly Size Form;
-        //public readonly Color Color;
+        public readonly Color Color;
         public Point Location;
-        public Tag(string text, Size form, Point location) {
+        public Tag(string text, Font font, Size form, Point location, Color color) {
             Text = text;
             Form = form;
             Location = location;
-            //Color = Color.Brown;
+            Font = font;
+            Color = color;
         }
     }
 }

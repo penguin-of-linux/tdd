@@ -1,8 +1,9 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
-using System.Linq;
 using Autofac;
 using TagsCloudVisualization.FileReaders;
+using TagsCloudVisualization.CloudBuilders;
+using TagsCloudVisualization.Preprocessors;
 
 namespace TagsCloudVisualization {
     static class Program {
@@ -10,28 +11,33 @@ namespace TagsCloudVisualization {
         static void Main() {
             AutofacSetUp();
 
-            var words = container.Resolve<IFileReader>().GetWords("../../words1.txt");
-            var cloud = TagCloud.CreateTagsCloud(words);
+            var reader = container.Resolve<IFileReader>();
+            var preprocessor = container.Resolve<IPreprocessor>();
             var layouter = container.Resolve<ICloudLayouter>(
-                new TypedParameter(typeof(Point), new Point(200, 200)));
+                    new TypedParameter(typeof(Point), new Point(300, 300)));
+            var cloudBilder = container.Resolve<ICloudBuilder>();
 
-            for(int i = 0; i < cloud.Tags.Count; i++) {
-                var location = layouter.PushNextRectangle(cloud.Tags[i].Form).Location;
-                cloud.Tags[i].Location = location;
-            }
+            var words = reader.GetWords("../../words1.txt");
+            words = preprocessor.GetProcessedWords(words);
 
-            var visualizator = new TagsCloudVisualizator(new Size(layouter.CloudWidth, layouter.CloudHeight));
+            var cloud = cloudBilder.CreateCloud(words, layouter);
+
+            var visualizator = container.Resolve<ITagCloudVisualizator>(
+                new TypedParameter(typeof(Size), (
+                    new Size(
+                        layouter.CloudWidth + layouter.Center.X, layouter.CloudHeight + layouter.Center.Y))));
 
             visualizator.Cloud = cloud;
-            //visualizator.SaveImageToFile("1.bmp", layouter.GetRectangles());
-
-            Application.Run(visualizator);
+            visualizator.DrawCloud();
         }
 
         static void AutofacSetUp() {
             var builder = new ContainerBuilder();
             builder.RegisterType<CircularCloudLayouter>().As<ICloudLayouter>();
             builder.RegisterType<TxtReader>().As<IFileReader>();
+            builder.RegisterType<CloudBuilder>().As<ICloudBuilder>();
+            builder.RegisterType<WinFormsVisualisator>().As<ITagCloudVisualizator>();
+            builder.RegisterType<BoringPreprocessor>().As<IPreprocessor>();
 
             container = builder.Build();
         }
