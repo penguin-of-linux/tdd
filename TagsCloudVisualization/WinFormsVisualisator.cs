@@ -3,31 +3,46 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
 using System;
+using TagsCloudVisualization.FileReaders;
+using TagsCloudVisualization.Preprocessors;
+using TagsCloudVisualization.Savers;
+using TagsCloudVisualization.CloudBuilders;
+using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization {
     public class WinFormsVisualisator : Form, ITagCloudVisualizator {
         public TagCloud Cloud { private get; set; }
-        public WinFormsVisualisator(Size size) {
-            Size = size;
-        }
+        private TextBox FileInputField = new TextBox();
+        private TextBox FileOutputField = new TextBox();
+        private Button BuildCloudButton = new Button();
+        private Button SaveImageButton = new Button();
 
-        public void SaveImageToFile(string fileName) {
-            var rectangles = Cloud.Tags.Select(t => new Rectangle(t.Location, t.Form));
+        private IFileReader reader;
+        private ICloudLayouter layouter;
+        private IPreprocessor preprocessor;
+        private IImageSaver saver;
+        private ICloudBuilder cloudBuilder;
 
-            var left = rectangles.Min(r => r.Left);
-            var top = rectangles.Min(r => r.Top);
-            var height = rectangles.Max(r => r.Bottom) - rectangles.Min(r => r.Top);
-            var width = rectangles.Max(r => r.Right) - rectangles.Min(r => r.Left);
+        public WinFormsVisualisator() {
+            Size = new Size(200, 200);
 
-            var bitmap = new Bitmap(width + 100, height + 100);
-            var graphics = Graphics.FromImage(bitmap);
+            FileInputField.Text = "hungry_games_small.txt";
 
-            graphics.FillRectangle(Brushes.White, 0, 0, width, height);
-            graphics.DrawRectangles(new Pen(Color.Black), rectangles
-                .Select(r => new Rectangle(new Point(r.Location.X - left, r.Location.Y - top), r.Size))
-                .ToArray());
+            BuildCloudButton.Text = "Build cloud";
+            BuildCloudButton.Click += BuildCloudHandler;
+            BuildCloudButton.Location = new Point(0, 25);
 
-            bitmap.Save(fileName);
+            FileOutputField.Text = "out file";
+            FileOutputField.Location = new Point(0, 50);
+
+            SaveImageButton.Text = "Save image";
+            SaveImageButton.Click += SaveImageHandler;
+            SaveImageButton.Location = new Point(0, 75);
+
+            Controls.Add(BuildCloudButton);
+            Controls.Add(FileInputField);
+            Controls.Add(SaveImageButton);
+            Controls.Add(FileOutputField);
         }
 
         protected override void OnPaint(PaintEventArgs e) {
@@ -36,16 +51,56 @@ namespace TagsCloudVisualization {
             if (Cloud != null) {
                 foreach(var tag in Cloud.Tags) {
                     var rect = new Rectangle(tag.Location, tag.Form);
-                    //graphics.DrawRectangle(new Pen(Color.Black), rect);
-                    //graphics.FillRectangle()
-                    //var fontSize_em = (int)(rect.Height / 0.35);
                     TextRenderer.DrawText(graphics, tag.Text, tag.Font, rect, tag.Color);
                 }
             }
         }
 
-        public void DrawCloud() {
+        public void Run() {
             Application.Run(this);
+        }
+
+        private void BuildCloudHandler(object sender, EventArgs e) {
+            try {
+                BuildCloud();
+            }
+            catch {
+                MessageBox.Show("Can not create cloud!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void SaveImageHandler(object sender, EventArgs e) {
+            try {
+                saver.SaveToFile(FileOutputField.Text, Cloud, new Size(Cloud.Width + layouter.Center.X,
+                    Cloud.Height + layouter.Center.Y));
+            }
+            catch {
+                MessageBox.Show("Can not save image!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void BuildCloud() {
+            var words = reader.GetWords(FileInputField.Text);
+            words = preprocessor.GetProcessedWords(words);
+
+             Cloud = cloudBuilder.CreateCloud(words, layouter);
+            var imageSize = new Size(layouter.CloudWidth + layouter.Center.X, layouter.CloudHeight + layouter.Center.Y);
+            Size = new Size(Cloud.Width + layouter.Center.X, Cloud.Height + layouter.Center.Y);
+
+            Invalidate();
+        }
+
+        public void SetSettings(IFileReader reader,
+                                ICloudLayouter layouter, 
+                                IPreprocessor preprocessor, 
+                                IImageSaver saver,
+                                ICloudBuilder builder) {
+            this.reader = reader;
+            this.layouter = layouter;
+            this.preprocessor = preprocessor;
+            this.saver = saver;
+            this.cloudBuilder = builder;
         }
     }
 }

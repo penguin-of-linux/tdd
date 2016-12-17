@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization {
+namespace TagsCloudVisualization.Layouters {
     public static class Geometry {
         public const double offsetAlongRay = 8;
         private static double SpiralEquation(double k, double fi) {

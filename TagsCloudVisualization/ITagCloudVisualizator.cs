@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TagsCloudVisualization {
+﻿namespace TagsCloudVisualization {
     public interface ITagCloudVisualizator {
         TagCloud Cloud { set; }
-        void SaveImageToFile(string fileName);
-        void DrawCloud();
+        void SetSettings(FileReaders.IFileReader reader,
+                         Layouters.ICloudLayouter layouter,
+                         Preprocessors.IPreprocessor preprocessor,
+                         Savers.IImageSaver saver,
+                         CloudBuilders.ICloudBuilder builder);
+        void Run();
     }
 }

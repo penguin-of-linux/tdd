@@ -1,9 +1,12 @@
-﻿using System.Windows.Forms;
-using System.Drawing;
+﻿using System.Drawing;
 using Autofac;
 using TagsCloudVisualization.FileReaders;
 using TagsCloudVisualization.CloudBuilders;
 using TagsCloudVisualization.Preprocessors;
+using TagsCloudVisualization.Savers;
+using System.IO;
+using System.Text;
+using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization {
     static class Program {
@@ -16,19 +19,12 @@ namespace TagsCloudVisualization {
             var layouter = container.Resolve<ICloudLayouter>(
                     new TypedParameter(typeof(Point), new Point(300, 300)));
             var cloudBilder = container.Resolve<ICloudBuilder>();
+            var saver = container.Resolve<IImageSaver>();
 
-            var words = reader.GetWords("../../words1.txt");
-            words = preprocessor.GetProcessedWords(words);
+            var visualizator = container.Resolve<ITagCloudVisualizator>();
 
-            var cloud = cloudBilder.CreateCloud(words, layouter);
-
-            var visualizator = container.Resolve<ITagCloudVisualizator>(
-                new TypedParameter(typeof(Size), (
-                    new Size(
-                        layouter.CloudWidth + layouter.Center.X, layouter.CloudHeight + layouter.Center.Y))));
-
-            visualizator.Cloud = cloud;
-            visualizator.DrawCloud();
+            visualizator.SetSettings(reader, layouter, preprocessor, saver, cloudBilder);
+            visualizator.Run();
         }
 
         static void AutofacSetUp() {
@@ -38,6 +34,7 @@ namespace TagsCloudVisualization {
             builder.RegisterType<CloudBuilder>().As<ICloudBuilder>();
             builder.RegisterType<WinFormsVisualisator>().As<ITagCloudVisualizator>();
             builder.RegisterType<BoringPreprocessor>().As<IPreprocessor>();
+            builder.RegisterType<BmpSaver>().As<IImageSaver>();
 
             container = builder.Build();
         }

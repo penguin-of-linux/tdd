@@ -2,11 +2,12 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.CloudBuilders {
     public class CloudBuilder : ICloudBuilder {
-        private const double minFontSize = 9;
-        private const double maxFontSize = 10;
+        private const double minFontSize = 5;
+        private const double maxFontSize = 20;
 
         public TagCloud CreateCloud(IEnumerable<string> words, ICloudLayouter layouter) {
             var tags = new List<Tag>();
@@ -20,7 +21,7 @@ namespace TagsCloudVisualization.CloudBuilders {
             var minFrequency = frequencyDictionary.Values.Min();
             var maxFrequency = frequencyDictionary.Values.Max();
             var sizesDifferent = maxFontSize != minFontSize ? (maxFontSize - minFontSize) : 1;
-            var fontSizePerOneFrequency = (maxFrequency - minFrequency) / sizesDifferent;
+            var fontSizePerOneFrequency = sizesDifferent / (maxFrequency - minFrequency);
 
             foreach (var pair in frequencyDictionary) {
                 var font = new Font("fantasy", (float)(minFontSize + fontSizePerOneFrequency * pair.Value));

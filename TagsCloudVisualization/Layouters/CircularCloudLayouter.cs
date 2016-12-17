@@ -3,7 +3,7 @@ using System.Drawing;
 using System;
 using System.Linq;
 
-namespace TagsCloudVisualization {
+namespace TagsCloudVisualization.Layouters {
     public class CircularCloudLayouter : ICloudLayouter {
         public Point Center { get; }
         private List<Rectangle> rectangles = new List<Rectangle>();

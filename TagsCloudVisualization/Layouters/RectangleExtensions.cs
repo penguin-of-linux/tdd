@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 
 
-namespace TagsCloudVisualization {
+namespace TagsCloudVisualization.Layouters {
     public static class RectangleExtensions {
         public static bool IsCrossing(this Rectangle targetRect, List<Rectangle> rectangles) {
             foreach (var rect in rectangles)
